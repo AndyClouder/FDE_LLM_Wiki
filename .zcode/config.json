@@ -1,0 +1,20 @@
+{
+  "hooks": {
+    "enabled": true,
+    "events": {
+      "SessionStart": [
+        {
+          "hooks": [
+            {
+              "type": "process",
+              "command": "python",
+              "args": ["${ZCODE_PROJECT_DIR}/tools/hook_lint.py"],
+              "timeoutMs": 150000,
+              "statusMessage": "知识库自动体检"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

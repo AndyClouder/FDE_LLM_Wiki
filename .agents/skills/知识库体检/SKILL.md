@@ -13,6 +13,8 @@ description: FDE 认知知识库的全库审计操作(LINT)。当用户说"跑�
 ```bash
 python tools/lint.py
 ```
+> L4 起会话启动时 SessionStart 钩子(`tools/hook_lint.py`)已自动跑过一次并把结果注入上下文——注入结果显示全绿时本步骤可跳过;有问题则按下述流程处理。
+
 脚本自动检查:
 - 47+ 个 wiki 页 frontmatter 九字段完整、type/status 合法
 - 全部 `[[wikilink]]` 可解析(0 断链;代码段内的示例链接已豁免)
@@ -20,15 +22,15 @@ python tools/lint.py
 - 源卡 `ingestion` 状态(应为 full;新资料 pending 属正常,提示走摄取技能)
 - index.md 统计行 vs 实际文件数
 - 待摄取清单未勾选项
+- inbox 源卡覆盖(inbox/ 资料文件未被任何源卡 `path` 引用 → 提醒走摄取技能建卡)
 
 ### 2. 处理脚本发现的问题
 - **能自动修的直接修**:断链写法(`[[graph.md]]`→标准链接)、统计过期、清单漏勾——修完记 changelog
 - **拿不准的只标记不动手**:在 changelog 记录问题,留给用户决定
 
 ### 3. 人工检查项(脚本不覆盖)
-- [ ] **置信度衰减重算**:概念/架构类半衰期 12 个月、打法类 6 个月、瞬态事实 1 个月;`last_confirmed` 超过一个半衰期未强化 → confidence −0.1 并更新页面
+- [ ] **置信度衰减重算**:概念/架构类半衰期 12 个月、打法类 6 个月、瞬态事实 1 个月;`last_confirmed` 超过一个半衰期未强化 → confidence −0.1 并更新页面(每周一 9 点的定时体检任务会自动执行本项)
 - [ ] **矛盾检测**:同主题页面声明是否冲突 → 按 AGENTS.md §7 提议 supersession(新近性>权威>证据数)
-- [ ] **inbox/ 无源卡的资料** → 补建源卡或提示用户走摄取技能
 - [ ] `.zcode-tmp/` 等临时目录清理
 
 ### 4. 报告
@@ -50,4 +52,4 @@ python tools/lint.py
 ## 可扩展
 
 - 新增检查项:改 `tools/lint.py` 后在 changelog 记录(工具也是知识库资产)
-- L4 阶段可将本技能配置为定时任务自动执行
+- ~~L4 阶段可将本技能配置为定时任务自动执行~~ ✅ 已落地(2026-08-20):SessionStart 钩子自动 lint + 每周一 9 点定时体检任务

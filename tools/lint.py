@@ -2,14 +2,14 @@ import os, re, sys
 
 # FDE 知识库全库审计脚本(lint)
 # 用法:python tools/lint.py
-# 检查:frontmatter 完整性 / wikilink 断链 / 孤儿页 / 源卡摄取状态 / index 统计一致性 / 待办清单
+# 检查:frontmatter 完整性 / wikilink 断链 / 孤儿页 / 源卡摄取状态 / index 统计一致性 / 待办清单 / inbox 源卡覆盖
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
 issues = []
 
 all_md = []
 for root, dirs, files in os.walk(ROOT):
-    dirs[:] = [d for d in dirs if d not in ('.obsidian', '.zcode-tmp', '新建文件夹', '.agents')]
+    dirs[:] = [d for d in dirs if d not in ('.obsidian', '.zcode-tmp', '新建文件夹', '.agents', '.git')]
     for f in files:
         if f.endswith('.md'):
             all_md.append(os.path.join(root, f))
@@ -89,11 +89,25 @@ pending = re.findall(r'^- \[ \](.+)$', idx, re.M)
 if pending:
     issues.append(f"[待办] index.md 仍有未勾选项: {pending}")
 
+# inbox 源卡覆盖检查(L4):inbox 中每个资料文件应被某张源卡的 path 引用
+inbox_dir = os.path.join(ROOT, 'inbox')
+if os.path.isdir(inbox_dir):
+    card_text = ''
+    for p in all_md:
+        if os.sep + 'sources' + os.sep in p:
+            with open(p, encoding='utf-8') as f:
+                card_text += f.read() + '\n'
+    for f in sorted(os.listdir(inbox_dir)):
+        if f == 'README.md' or f.startswith('.'):
+            continue
+        if f not in card_text:
+            issues.append(f"[inbox] {f}: 无源卡引用 → 走知识库摄取技能建卡(ingestion: pending)")
+
 print(f"wiki 页面: {len(wiki_pages)}(源{stats['source']} 坑{stats['pitfall']} 概念{stats['concept']} 打法{stats['practice']}) | episodic: {len(episodic_pages)} | 被引用实体: {len(link_ref)}")
 if issues:
     print(f"\n发现 {len(issues)} 个问题:")
     for i in issues:
         print("  -", i)
     sys.exit(1)
-print("\n✅ LINT 全部通过:frontmatter 完整、无断链、无孤儿页、源卡摄取状态正常、统计一致、无未完成待办")
-print("   人工检查项(脚本不覆盖,按 AGENTS.md LINT 清单执行):置信度衰减重算、矛盾检测、inbox 无源卡资料补卡")
+print("\n✅ LINT 全部通过:frontmatter 完整、无断链、无孤儿页、源卡摄取状态正常、统计一致、无未完成待办、inbox 全覆盖")
+print("   人工检查项(脚本不覆盖,按 AGENTS.md LINT 清单执行):置信度衰减重算、矛盾检测")

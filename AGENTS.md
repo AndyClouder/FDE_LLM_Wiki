@@ -23,7 +23,8 @@ Forward Deployed Engineer(FDE)的个人认知库。领域主题:**投产、需�
 | `index.md` | 人类可读目录 | 总目录 + 统计 + 待摄取清单 |
 | `changelog.md` | 审计日志 | 每次 ingest / lint / 合并 / 删除都记一行 |
 | `.agents/skills/` | 标准技能 | 三个固化操作:知识库摄取 / 知识库体检 / 知识库结晶(含完整步骤与踩坑点) |
-| `tools/` | 工具 | `lint.py` 全库机器审计脚本 |
+| `.zcode/config.json` | 钩子配置(L4) | SessionStart 自动跑 lint 并把结果注入上下文(`tools/hook_lint.py`);每周一 9 点定时体检+衰减重算(会话内定时任务) |
+| `tools/` | 工具 | `lint.py` 全库机器审计(含 inbox 源卡覆盖)· `search.py` BM25 轻量检索(L5)· `hook_lint.py` 钩子包装 |
 
 四级记忆的晋升方向:inbox(工作)→ episodic(情景)→ wiki/concepts(语义)→ wiki/practices(程序)。越往上越压缩、置信度越高、生命越长。
 
@@ -90,13 +91,13 @@ superseded_by: "[[新页面]]"   # 仅 status=superseded 时存在
 流程要点:扫描 inbox → 建源卡 → **脱敏(强制,先于一切内容处理)** → 提取声明(已有页面走强化 / 没有则新建)→ 更新 graph / index → 记 changelog。声明落页规则见 §3/§4。
 
 **QUERY 查询**(始终生效的对话模式)
-1. 先读 `index.md` 定位候选页
+1. 先定位候选页:读 `index.md`,或跑 `python tools/search.py <关键词>`(L5 BM25 检索,输出附反向链接;向量语义层待"关键词不够用"的痛感明确后再评估)
 2. 读页面正文;影响/波及类问题走 `graph.md` 遍历
 3. 回答必须标注置信度与来源;confidence < 0.6 要明说"不太确定"
 4. 若推导出高质量回答(用户认可、推理链完整),按 CRYSTALLIZE 归档
 
-**LINT 体检**(每次会话开始时顺手跑;定期做衰减重算)→ 技能:[知识库体检](.agents/skills/知识库体检/SKILL.md)
-工具:`python tools/lint.py`(frontmatter / 断链 / 孤儿页 / 摄取状态 / 统计一致性 / 待办清单)+ 人工项(置信度衰减、矛盾检测、inbox 补卡)。能自动修的直接修并记 changelog,拿不准的只标记不动手。
+**LINT 体检**(L4 已自动化:SessionStart 钩子自动跑并注入结果;每周一 9 点定时体检+衰减重算)→ 技能:[知识库体检](.agents/skills/知识库体检/SKILL.md)
+工具:`python tools/lint.py`(frontmatter / 断链 / 孤儿页 / 摄取状态 / 统计一致性 / 待办清单 / inbox 源卡覆盖)+ 人工项(置信度衰减、矛盾检测)。能自动修的直接修并记 changelog,拿不准的只标记不动手。
 
 **CRYSTALLIZE 结晶**(有价值的会话结束时)→ 技能:[知识库结晶](.agents/skills/知识库结晶/SKILL.md)
 流程要点:写 `episodic/YYYY-MM-DD-主题.md`(问题/做了什么/关键发现/教训/待办)→ 够格教训晋升 wiki(克制:wiki 页面数不是 KPI)→ 更新 graph / index / changelog。
@@ -124,8 +125,8 @@ superseded_by: "[[新页面]]"   # 仅 status=superseded 时存在
 | L1 最小可用 | 源 + wiki 页 + index + schema | ✅ 2026-08-20 |
 | L2 生命周期 | 置信度、supersession、衰减 | ✅ 2026-08-20 |
 | L3 结构 | 实体抽取、类型化关系、图谱 | ✅ 2026-08-20 |
-| L4 自动化 | 钩子:自动摄取/自动 lint/上下文注入 | ⬜ 可选:ZCode hooks + 定时任务 |
-| L5 规模化 | 混合检索(页面 >100 后再考虑) | ⬜ |
+| L4 自动化 | 钩子:自动摄取/自动 lint/上下文注入 | ✅ 2026-08-20:SessionStart 钩子自动 lint+注入(`.zcode/config.json` + `tools/hook_lint.py`);每周一 9 点定时体检+衰减重算;自动摄取 = lint 的 inbox 覆盖检查自动提醒建卡 |
+| L5 规模化 | 混合检索(页面 >100 后再考虑) | ✅ 轻量版 2026-08-20:`tools/search.py` BM25(关键词+反向链接导航);向量语义层按"不跳级"原则待痛感明确后再评估 |
 | L6 多人协作 | mesh 同步、共享/私有作用域 | ⬜ |
 
 不要跳级。每级跑顺了再上下一级。
