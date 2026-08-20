@@ -19,3 +19,5 @@
 | 2026-08-20 | infra(git 基线) | 全库 | git init(main 分支,局部身份 xuand@local)+ .gitignore(.zcode-tmp/.obsidian)+ 基线提交 2a61175——AGENTS.md §8"批量操作可回滚"自此有版本控制兜底;inbox/新建文件夹原始资料一并纳入版本保护,未做任何修改。 |
 | 2026-08-20 | infra(L4 自动化) | tools/ + .zcode/config.json + lint.py + 体检技能 | 三件套:①SessionStart 钩子(进程型,python tools/hook_lint.py)自动跑 lint 并以 additionalContext 注入会话上下文(严格 JSON schema 已验证);②每周一 9 点定时任务:体检+置信度衰减重算(半衰期规则)+矛盾粗扫+git 提交;③lint.py 新增 inbox 源卡覆盖检查(人工项转自动),体检技能 SKILL.md 同步(单一事实源)。AGENTS.md §2/§6/§10 同步更新。 |
 | 2026-08-20 | infra(L5 轻量检索) | tools/search.py | BM25 零依赖检索脚本(ASCII 词+中文二元组,标题命中加权,top 结果附反向链接);实测:同义改写"客户说好但没人用"准确命中"表态不等于行为信号"。向量语义层按"不跳级"原则暂缓,待关键词检索出现明确痛感再评估。QUERY 流程(AGENTS.md §6)第 1 步加入 search.py。 |
+| 2026-08-20 | infra(定时任务升级) | 持久 Cron + AGENTS.md + 体检技能 | 每周定时体检由会话级任务重建为持久任务,时间周一 9:00 → 周五 11:30(用户指定);AGENTS.md §2/§6/§10 与体检技能 SKILL.md 共 5 处过期时间同步;changelog/episodic 中的历史记录按审计规范不改写。 |
+| 2026-08-20 | restructure(index 手册化) | index.md | 用户要求独立成篇:重构为"背景 → 六大问题(症状/根源/解法叙事 + 深入阅读链接)→ 九大专题目录(98 页按主题重组,去除按书/按摄取批次分组)→ 库务附录(统计行/来源登记/情景记忆/运作工具)";正文零书目引用、零摄取批次痕迹,库务信息收尾且 lint 依赖项(统计行/链接覆盖)全保留。lint 通过:109 页 0 断链 0 孤儿页 统计一致。 |
