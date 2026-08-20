@@ -22,3 +22,4 @@
 | 2026-08-20 | infra(定时任务升级) | 持久 Cron + AGENTS.md + 体检技能 | 每周定时体检由会话级任务重建为持久任务,时间周一 9:00 → 周五 11:30(用户指定);AGENTS.md §2/§6/§10 与体检技能 SKILL.md 共 5 处过期时间同步;changelog/episodic 中的历史记录按审计规范不改写。 |
 | 2026-08-20 | restructure(index 手册化) | index.md | 用户要求独立成篇:重构为"背景 → 六大问题(症状/根源/解法叙事 + 深入阅读链接)→ 九大专题目录(98 页按主题重组,去除按书/按摄取批次分组)→ 库务附录(统计行/来源登记/情景记忆/运作工具)";正文零书目引用、零摄取批次痕迹,库务信息收尾且 lint 依赖项(统计行/链接覆盖)全保留。lint 通过:109 页 0 断链 0 孤儿页 统计一致。 |
 | 2026-08-20 | infra(远端备份) | git remote origin | 推送 main → github.com/AndyClouder/FDE_LLM_Wiki(首次,空仓库快进)。推送前审计:git 历史无任何 PDF/EPUB blob(原书早在 6f59a5a 移出跟踪且未进过历史),包体积 262 KiB,最大单文件 30 KB;inbox 仅跟踪 README。 |
+| 2026-08-20 | infra(移出跟踪+历史清洗) | 新建文件夹/ | 用户要求不进远端仓库:git rm --cached(磁盘文件不动,宪法 §9 原始资料保留)+ .gitignore + filter-branch 清洗全部历史(该路径自基线提交 3102183 起的 blob 全部移除)+ force push;GitHub 历史中不再可检索。本地文件与 [[LLM Wiki v2]] 源卡引用不受影响。 |
